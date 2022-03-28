@@ -1,0 +1,356 @@
+{
+	"info": {
+		"_postman_id": "52944997-1fab-4066-988a-9b7f0c871f94",
+		"name": "FoodRecipe App",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"\",\r\n    \"email\": \"\",\r\n    \"password\": \"\",\r\n    \"phone\": \"\",\r\n    \"photo\": \"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:4321/register",
+					"host": [
+						"localhost"
+					],
+					"port": "4321",
+					"path": [
+						"register"
+					]
+				},
+				"description": "Untuk registrasi user. gunakan method POST dan send data menggunakan body (raw json) dengan parameter:\n\n*   name (string) = NOT NULL\n*   email (string) = NOT NULL\n*   password (string) = NOT NULL\n*   phone (string) = NULL\n*   photo (string) = NULL"
+			},
+			"response": []
+		},
+		{
+			"name": "Show user",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:4321/user/list",
+					"host": [
+						"localhost"
+					],
+					"port": "4321",
+					"path": [
+						"user",
+						"list"
+					]
+				},
+				"description": "Untuk mengambil dan menampilkan list data seluruh user. gunakan method GET pada url"
+			},
+			"response": []
+		},
+		{
+			"name": "Update user",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"\",\r\n    \"email\": \"\",\r\n    \"password\": \"\",\r\n    \"phone\": \"\",\r\n    \"photo\": \"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:4321/edit/user/999",
+					"host": [
+						"localhost"
+					],
+					"port": "4321",
+					"path": [
+						"edit",
+						"user",
+						"999"
+					]
+				},
+				"description": "Untuk mengupdate / mengubah data pada user. Gunakan method PUT pada url dengan mengirimkan data menggunakan body (raw json) dengan parameter:\n\n*   name (string) = NOT NULL\n*   email (string) = NOT NULL\n*   password (string) = NOT NULL\n*   phone (string) = NULL\n*   photo (string) = NULL"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete user",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:4321/delete/user/999",
+					"host": [
+						"localhost"
+					],
+					"port": "4321",
+					"path": [
+						"delete",
+						"user",
+						"999"
+					]
+				},
+				"description": "Untuk menghapus data user. Gunakan method DELETE pada url dengan mengirimkan url parameter id"
+			},
+			"response": []
+		},
+		{
+			"name": "Show comment by recipe id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:4321/comment/1",
+					"host": [
+						"localhost"
+					],
+					"port": "4321",
+					"path": [
+						"comment",
+						"1"
+					]
+				},
+				"description": "Untuk menampilkan comment yang terdapat pada sebuah resep. Gunakan method GET pada url dengan mengirimkan url parameter id sebagai id resep"
+			},
+			"response": []
+		},
+		{
+			"name": "Insert comment to the recipe",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"comment_text\": \"\",\r\n    \"user_id\": \"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:4321/post/comment/1",
+					"host": [
+						"localhost"
+					],
+					"port": "4321",
+					"path": [
+						"post",
+						"comment",
+						"1"
+					]
+				},
+				"description": "Untuk menambahkan comment pada resep. Gunakan method POST pada url dengan mengirimkan url parameter id sebagai id resep dan mengirimkan data menggunakan body (raw json) dengan parameter:\n\n*   comment_text (string) = NOT NULL\n*   user_id (integer) = NOT NULL"
+			},
+			"response": []
+		},
+		{
+			"name": "Edit Comment",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"recipe_id\": \"\",\r\n    \"comment_text\": \"\",\r\n    \"user_id\": \"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:4321/edit/comment/1",
+					"host": [
+						"localhost"
+					],
+					"port": "4321",
+					"path": [
+						"edit",
+						"comment",
+						"1"
+					]
+				},
+				"description": "Untuk mengedit comment. Gunakan method PUT pada url dengan mengirimkan url parameter id sebagai id comment dan data pada body (raw json) dengan parameter:\n\n*   recipe_id (integer) = NOT NULL\n*   comment_text (string) = NOT NULL\n*   user_id (integer) = NOT NULL"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete comment",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:4321/delete/comment/99",
+					"host": [
+						"localhost"
+					],
+					"port": "4321",
+					"path": [
+						"delete",
+						"comment",
+						"99"
+					]
+				},
+				"description": "Untuk menghapus comment. Gunakan method DELETE pada url dengan mengirim url parameter id sebagai id comment yang akan di hapus"
+			},
+			"response": []
+		},
+		{
+			"name": "Create new recipe",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"photo\": \"\",\r\n    \"title\": \"\",\r\n    \"ingredients\": \"\",\r\n    \"video\": \"\",\r\n    \"date\": \"\",\r\n    \"user_id\": \"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:4321/post/recipe",
+					"host": [
+						"localhost"
+					],
+					"port": "4321",
+					"path": [
+						"post",
+						"recipe"
+					]
+				},
+				"description": "Untuk menambahkan resep. Gunakan method POST pada url dengan mengirimkan data pada body (raw json) dengan parameter:\n\n*   photo (string) = NULL\n*   title (string) = NOT NULL\n*   ingredients (string) = NULL\n*   video (string) = NULL\n*   date (date) = NOT NULL\n*   user_id (integer) = NOT NULL\n    \n\nNote: pada parameter 'date' input tanggal dengan format (YYYY-MM-DD)"
+			},
+			"response": []
+		},
+		{
+			"name": "Show recipe",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:4321/recipe/list?name=",
+					"host": [
+						"localhost"
+					],
+					"port": "4321",
+					"path": [
+						"recipe",
+						"list"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": ""
+						}
+					]
+				},
+				"description": "Untuk menampilkan seluruh resep. Gunakan method GET pada url.\n\nNote: dapat menambahkan query 'name' untuk menampilkan data sesuai nama yang di input. jika tidak menambahkan query 'name', maka semua data akan ditampilkan"
+			},
+			"response": []
+		},
+		{
+			"name": "Update recipe",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"photo\": \"\",\r\n    \"title\": \"\",\r\n    \"ingredients\": \"\",\r\n    \"video\": \"\",\r\n    \"date\": \"\",\r\n    \"user_id\": \"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:4321/edit/recipe/99",
+					"host": [
+						"localhost"
+					],
+					"port": "4321",
+					"path": [
+						"edit",
+						"recipe",
+						"99"
+					]
+				},
+				"description": "Untuk mengupdate / mengubah data resep. Gunakan method PUT pada url dengan mengirim url parameter id sebagai id resep dan data pada body (raw json) dengan parameter:\n\n*   photo (string) = NULL\n*   title (string) = NOT NULL\n*   ingredients (string) = NOT NULL\n*   video (string) = NULL\n*   date (date) = NOT NULL\n*   user_id (integer) = NOT NULL\n    \n\nNote: pada parameter 'date' input tanggal dengan format (YYYY-MM-DD)"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete recipe",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:4321/delete/recipe/99",
+					"host": [
+						"localhost"
+					],
+					"port": "4321",
+					"path": [
+						"delete",
+						"recipe",
+						"99"
+					]
+				},
+				"description": "Untuk menghapus data resep. Gunakan method DELETE pada url dengan mengirim url parameter id sebagai id resep yang akan dihapus"
+			},
+			"response": []
+		},
+		{
+			"name": "Show newest recipe",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:4321/recipe/latest",
+					"host": [
+						"localhost"
+					],
+					"port": "4321",
+					"path": [
+						"recipe",
+						"latest"
+					]
+				},
+				"description": "Untuk menampilkan resep terbaru berdasarkan tanggal (Maks. 5) . Gunakan method GET pada url"
+			},
+			"response": []
+		},
+		{
+			"name": "Search recipe by author",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:4321/recipe/author/99",
+					"host": [
+						"localhost"
+					],
+					"port": "4321",
+					"path": [
+						"recipe",
+						"author",
+						"99"
+					]
+				},
+				"description": "Untuk mencari resep berdasarkan author. Gunakan method GET pada url dengan mengirimkan url parameter id sebagai id author"
+			},
+			"response": []
+		}
+	]
+}
