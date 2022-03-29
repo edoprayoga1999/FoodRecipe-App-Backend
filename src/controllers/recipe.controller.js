@@ -2,7 +2,7 @@ const recipeModel = require('../models/recipe.model')
 const recipeController = {
   createRecipe: (req, res) => {
     try {
-      const { photo, title, ingredients, video, date, user_id } = req.body
+      const { photo, title, ingredients, video, user_id } = req.body
       const userID = user_id
       if (!title) {
         throw Error('Title harus diisi')
@@ -10,13 +10,10 @@ const recipeController = {
       if (!ingredients) {
         throw Error('Ingredients harus diisi')
       }
-      if (!date) {
-        throw Error('Date harus diisi')
-      }
       if (!userID) {
         throw Error('UserID harus diisi')
       }
-      recipeModel.createRecipe(photo, title, ingredients, video, date, userID)
+      recipeModel.createRecipe(photo, title, ingredients, video, userID)
         .then((result) => {
           const hasil = { status: 'Sukses', message: 'Sukses menambahkan resep!' }
           res.json(hasil)
@@ -56,7 +53,7 @@ const recipeController = {
   updateRecipe: (req, res) => {
     try {
       const id = req.params.id
-      const { photo, title, ingredients, video, date, user_id } = req.body
+      const { photo, title, ingredients, video, user_id } = req.body
       const userID = user_id
       if (!id) {
         throw Error('ID harus dikirim')
@@ -67,13 +64,10 @@ const recipeController = {
       if (!ingredients) {
         throw Error('Ingredients harus dikirim')
       }
-      if (!date) {
-        throw Error('Date harus dikirim')
-      }
       if (!userID) {
         throw Error('user_id harus dikirim')
       }
-      recipeModel.updateRecipe(id, photo, title, ingredients, video, date, userID)
+      recipeModel.updateRecipe(id, photo, title, ingredients, video, userID)
         .then((result) => {
           if (result.rowCount > 0) {
             const hasil = { status: 'Sukses', message: 'Update data recipe sukses!' }
@@ -102,7 +96,7 @@ const recipeController = {
       recipeModel.deleteRecipe(id)
         .then((result) => {
           if (result.rowCount > 0) {
-            const hasil = { status: 'Sukses', message: "Resep berhasil dihapus!" }
+            const hasil = { status: 'Sukses', message: 'Resep berhasil dihapus!' }
             res.json(hasil)
           } else {
             const hasil = { status: 'Error', message: 'Gagal menghapus, recipe id = ' + id + ' tidak ditemukan' }

@@ -1,8 +1,8 @@
 const db = require('../config/db')
 const recipeModel = {
-  createRecipe: (photo, title, ingredients, video, date, userID) => {
+  createRecipe: (photo, title, ingredients, video, userID) => {
     return new Promise((resolve, reject) => {
-      db.query('INSERT INTO recipe (photo, title, ingredients, video, date, user_id) VALUES ($1, $2, $3, $4, $5, $6)', [photo, title, ingredients, video, date, userID], (err, result) => {
+      db.query('INSERT INTO recipe (photo, title, ingredients, video, date, user_id) VALUES ($1, $2, $3, $4, current_timestamp, $5)', [photo, title, ingredients, video, userID], (err, result) => {
         if (err) {
           reject(err)
         } else {
@@ -22,9 +22,9 @@ const recipeModel = {
       })
     })
   },
-  updateRecipe: (id, photo, title, ingredients, video, date, userID) => {
+  updateRecipe: (id, photo, title, ingredients, video, userID) => {
     return new Promise((resolve, reject) => {
-      db.query('UPDATE recipe SET photo=$1, title=$2, ingredients=$3, video=$4, date=$5, user_id=$6 WHERE id=$7', [photo, title, ingredients, video, date, userID, id], (err, result) => {
+      db.query('UPDATE recipe SET photo=$1, title=$2, ingredients=$3, video=$4, date=current_timestamp, user_id=$5 WHERE id=$6', [photo, title, ingredients, video, userID, id], (err, result) => {
         if (err) {
           reject(err)
         } else {
