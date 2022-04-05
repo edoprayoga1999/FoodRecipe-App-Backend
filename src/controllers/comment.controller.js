@@ -1,3 +1,4 @@
+const { success, failed } = require('../helpers/response')
 const commentModel = require('../models/comment.model')
 const commentController = {
   showCommentByRecipe: (req, res) => {
@@ -8,25 +9,20 @@ const commentController = {
       }
       commentModel.showCommentByRecipe(recipeID)
         .then((result) => {
-          const list = result.rows
-          const hasil = { status: 'Sukses', list }
-          res.json(hasil)
+          success(res, result.rows, 'success', 'get comment success')
         })
         .catch((err) => {
-          const hasil = { status: 'Error', err }
-          res.json(hasil)
+          failed(res, err, 'error', 'an error has occured')
         })
     } catch (err) {
-      const errorMsg = err.message
-      const hasil = { status: 'Error', errorMsg }
-      res.json(hasil)
+      failed(res, null, 'error', err.message)
     }
   },
   postCommentByRecipe: (req, res) => {
     try {
       const recipeID = req.params.recipeID
       const commentText = req.body.comment_text
-      const userID = req.body.user_id
+      const userID = req.APP_DATA.tokenDecoded.id
       if (!recipeID) {
         throw Error('recipe_id harus di isi')
       }
@@ -38,17 +34,13 @@ const commentController = {
       }
       commentModel.postCommentByRecipe(recipeID, commentText, userID)
         .then((result) => {
-          const hasil = { status: 'Sukses', message: 'Sukses menambahkan komentar' }
-          res.json(hasil)
+          success(res, null, 'success', 'sukses menambahkan komentar')
         })
         .catch((err) => {
-          const hasil = { status: 'Error', err }
-          res.json(hasil)
+          failed(res, err, 'error', 'an error has occured')
         })
     } catch (err) {
-      const errorMsg = err.message
-      const hasil = { status: 'Error', errorMsg }
-      res.json(hasil)
+      failed(res, null, 'error', err.message)
     }
   },
   editComment: (req, res) => {
@@ -56,7 +48,7 @@ const commentController = {
       const id = req.params.id
       const recipeID = req.body.recipe_id
       const commentText = req.body.comment_text
-      const userID = req.body.user_id
+      const userID = req.APP_DATA.tokenDecoded.id
       if (!id) {
         throw Error('ID harus dikirim')
       }
@@ -69,47 +61,61 @@ const commentController = {
       if (!userID) {
         throw Error('user_id harus diisi')
       }
-      commentModel.editComment(id, recipeID, commentText, userID)
+      commentModel.checkAuthor(id)
         .then((result) => {
           if (result.rowCount > 0) {
-            const hasil = { status: 'Sukses', message: 'Berhasil edit comment' }
-            res.json(hasil)
+            if (result.rows[0].user_id === userID) {
+              commentModel.editComment(id, recipeID, commentText, userID)
+                .then((result) => {
+                  success(res, null, 'success', 'edit comment berhasil')
+                })
+                .catch((err) => {
+                  failed(res, err, 'error', 'an error has occured')
+                })
+            } else {
+              failed(res, null, 'error', 'forbidden')
+            }
           } else {
-            const hasil = { status: 'Error', message: 'Comment dengan id = ' + id + ' tidak ditemukan' }
-            res.json(hasil)
+            failed(res, null, 'error', 'comment tidak ditemukan')
           }
         })
         .catch((err) => {
-          const hasil = { status: 'Error', err }
-          res.json(hasil)
+          failed(res, err, 'error', 'an error has occured')
         })
     } catch (err) {
-      const errorMsg = err.message
-      const hasil = { status: 'Error', errorMsg }
-      res.json(hasil)
+      failed(res, null, 'error', err.message)
     }
   },
   deleteComment: (req, res) => {
     try {
+      const userID = req.APP_DATA.tokenDecoded.id
       const id = req.params.id
       if (!id) {
         throw Error('ID harus dikirim')
       }
-      commentModel.deleteComment(id)
+      commentModel.checkAuthor(id)
         .then((result) => {
           if (result.rowCount > 0) {
-            const hasil = { status: 'Sukses', message: 'Hapus comment berhasil' }
-            res.json(hasil)
+            if (result.rows[0].user_id === userID) {
+              commentModel.deleteComment(id)
+                .then((result) => {
+                  success(res, null, 'success', 'hapus comment berhasil')
+                })
+                .catch((err) => {
+                  failed(res, err, 'error', 'an error has occured')
+                })
+            } else {
+              failed(res, null, 'error', 'forbidden')
+            }
           } else {
-            const hasil = { status: 'Error', message: 'Hapus comment gagal, id comment tidak ditemukan' }
-            res.json(hasil)
+            failed(res, null, 'error', 'comment tidak ditemukan')
           }
         })
         .catch((err) => {
-          res.json(err)
+          failed(res, err, 'error', 'an error has occured')
         })
     } catch (err) {
-      res.json(err)
+      failed(res, null, 'error', err.message)
     }
   }
 }

@@ -1,60 +1,65 @@
+const { success, failed } = require('../helpers/response')
 const recipeModel = require('../models/recipe.model')
 const recipeController = {
   createRecipe: (req, res) => {
     try {
-      const { photo, title, ingredients, video, user_id } = req.body
-      const userID = user_id
+      const { title, ingredients, video } = req.body
       if (!title) {
         throw Error('Title harus diisi')
       }
       if (!ingredients) {
         throw Error('Ingredients harus diisi')
       }
-      if (!userID) {
-        throw Error('UserID harus diisi')
+      const userID = req.APP_DATA.tokenDecoded.id
+      let photo = req.file.filename
+      if (!photo) {
+        photo = null
       }
       recipeModel.createRecipe(photo, title, ingredients, video, userID)
         .then((result) => {
-          const hasil = { status: 'Sukses', message: 'Sukses menambahkan resep!' }
-          res.json(hasil)
+          success(res, null, 'success', 'sukses menambahkan resep!')
         })
         .catch((err) => {
           let detail = err.detail
           if (!detail) {
             detail = err.hint
           }
-          const hasil = { status: 'Error', detail }
-          res.json(hasil)
+          failed(res, null, 'error', detail)
         })
     } catch (err) {
-      const errorMsg = err.message
-      const hasil = { status: 'Error', message: errorMsg }
-      res.json(hasil)
+      failed(res, err.message, 'error', 'an error has occured')
     }
   },
-  recipeList: (req, res) => {
+  recipeList: async (req, res) => {
     try {
+      const { sortField, sortType, page, limit } = req.query
+      const field = sortField || 'title'
+      const type = sortType === 'DESC' ? sortType : 'ASC'
+      const getPage = page ? Number(page) : 1
+      const limitPage = limit ? Number(limit) : 2
+      const offset = (getPage - 1) * limitPage
+      const allData = await recipeModel.allData()
+      const totalData = Number(allData.rows[0].total)
       const name = req.query.name || ''
-      recipeModel.recipeList(name)
+      recipeModel.recipeList(field, type, limitPage, offset, name)
         .then((result) => {
-          const list = result.rows
-          const hasil = { status: 'Sukses', list }
-          res.json(hasil)
+          const pagination = { page: getPage, data_perPage: limitPage, total_data: totalData }
+          success(res, result.rows, 'success', 'get recipe success', pagination)
         })
         .catch((err) => {
-          const hasil = { status: 'Error', err }
-          res.json(hasil)
+          failed(res, err, 'error', '1an error has occured')
         })
     } catch (err) {
-      const hasil = { status: 'Error', err }
-      res.json(hasil)
+      failed(res, err, 'error', '2an error has occured')
     }
   },
   updateRecipe: (req, res) => {
     try {
       const id = req.params.id
-      const { photo, title, ingredients, video, user_id } = req.body
-      const userID = user_id
+      const { title, ingredients, video } = req.body
+      const userID = req.APP_DATA.tokenDecoded.id
+      const photo = req.file.filename
+
       if (!id) {
         throw Error('ID harus dikirim')
       }
@@ -64,91 +69,92 @@ const recipeController = {
       if (!ingredients) {
         throw Error('Ingredients harus dikirim')
       }
-      if (!userID) {
-        throw Error('user_id harus dikirim')
-      }
-      recipeModel.updateRecipe(id, photo, title, ingredients, video, userID)
+      recipeModel.checkAuthor(id)
         .then((result) => {
           if (result.rowCount > 0) {
-            const hasil = { status: 'Sukses', message: 'Update data recipe sukses!' }
-            res.json(hasil)
+            if (result.rows[0].user_id === userID) {
+              recipeModel.updateRecipe(id, photo, title, ingredients, video, userID)
+                .then((result) => {
+                  success(res, null, 'success', 'update data recipe sukses!')
+                })
+                .catch((err) => {
+                  failed(res, err, 'error', 'an error has occured')
+                })
+            } else {
+              failed(res, null, 'error', 'forbidden')
+            }
           } else {
-            const hasil = { status: 'Error', message: 'Recipe dengan id ' + id + ' tidak ditemukan' }
-            res.json(hasil)
+            failed(res, 'data not found', 'error', 'resep tidak ditemukan')
           }
         })
         .catch((err) => {
-          const hasil = { status: 'Error', err }
-          res.json(hasil)
+          failed(res, err, 'error', 'an error has occured')
         })
     } catch (err) {
-      const errorMsg = err.message
-      const hasil = { status: 'Error', errorMsg }
-      res.json(hasil)
+      failed(res, null, 'error', err.message)
     }
   },
   deleteRecipe: (req, res) => {
     try {
+      const userID = req.APP_DATA.tokenDecoded.id
       const id = req.params.id
       if (!id) {
         throw Error('ID harus diisi')
       }
-      recipeModel.deleteRecipe(id)
+      recipeModel.checkAuthor(id)
         .then((result) => {
           if (result.rowCount > 0) {
-            const hasil = { status: 'Sukses', message: 'Resep berhasil dihapus!' }
-            res.json(hasil)
+            if (result.rows[0].user_id === userID) {
+              recipeModel.deleteRecipe(id)
+                .then((result) => {
+                  success(res, null, 'success', 'resep berhasil dihapus!')
+                })
+                .catch((err) => {
+                  failed(res, err, 'error', 'an error has occured')
+                })
+            } else {
+              failed(res, null, 'error', 'you are not the author')
+            }
           } else {
-            const hasil = { status: 'Error', message: 'Gagal menghapus, recipe id = ' + id + ' tidak ditemukan' }
-            res.json(hasil)
+            failed(res, 'data not found', 'error', 'resep tidak ditemukan')
           }
         })
         .catch((err) => {
-          const hasil = { status: 'Error', err }
-          res.json(hasil)
+          failed(res, err, 'error', 'an error has occured')
         })
     } catch (err) {
-      const hasil = { status: 'error', message: err.message }
-      res.json(hasil)
+      failed(res, null, 'error', err.message)
     }
   },
   showNewRecipe: (req, res) => {
     try {
       recipeModel.showNewRecipe()
         .then((result) => {
-          res.json(result.rows)
+          success(res, result.rows, 'success', 'mendapatkan resep terbaru berhasil!')
         })
         .catch((err) => {
-          res.json(err)
+          failed(res, err, 'error', 'an error has occured')
         })
     } catch (err) {
-      res.json(err)
+      failed(res, err, 'error', 'an error has occured')
     }
   },
-  showRecipeByAuthorID: (req, res) => {
+  showRecipeByAuthor: (req, res) => {
     try {
-      const id = req.params.id
-      if (!id) {
-        throw Error('ID harus diisi')
-      }
-      recipeModel.showRecipeByAuthorID(id)
+      const name = req.query.name || ''
+      recipeModel.showRecipeByAuthor(name)
         .then((result) => {
           if (result.rowCount > 0) {
-            const list = result.rows
-            const hasil = { status: 'Sukses', list }
-            res.json(hasil)
+            success(res, result.rows, 'success', 'mendapatkan resep berdasarkan author berhasil!')
           } else {
-            const hasil = { status: 'Error', message: 'Recipe tidak ditemukan' }
-            res.json(hasil)
+            failed(res, null, 'error', 'resep tidak ditemukan')
           }
         })
         .catch((err) => {
-          const hasil = { status: 'Error', err }
-          res.json(hasil)
+          failed(res, err, 'error', 'an error has occured')
         })
     } catch (err) {
-      const hasil = { status: 'Error', errorMsg: err.message }
-      res.json(hasil)
+      failed(res, null, 'error', err.message)
     }
   }
 }

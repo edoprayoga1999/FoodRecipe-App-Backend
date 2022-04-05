@@ -1,8 +1,19 @@
 const db = require('../config/db')
 const userModel = {
-  showAllUser: () => {
+  allData: () => {
     return new Promise((resolve, reject) => {
-      db.query('SELECT * FROM users', (err, result) => {
+      db.query('SELECT COUNT(*) as total FROM users', (err, result) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  },
+  showAllUser: (field, type, limit, offset) => {
+    return new Promise((resolve, reject) => {
+      db.query(`SELECT id, name, email, phone, photo, level, is_verified, is_active FROM users ORDER BY ${field} ${type} LIMIT ${limit} OFFSET ${offset}`, (err, result) => {
         if (err) {
           reject(err)
         } else {
@@ -35,9 +46,9 @@ const userModel = {
       })
     })
   },
-  updateData: (id, name, email, password, phone, photo) => {
+  updateData: (id, name, email, phone, photo) => {
     return new Promise((resolve, reject) => {
-      db.query('UPDATE users SET name=$1, email=$2, password=$3, phone=$4, photo=$5 WHERE id=$6', [name, email, password, phone, photo, id], (err, result) => {
+      db.query('UPDATE users SET name=$1, email=$2, phone=$3, photo=$4 WHERE id=$5', [name, email, phone, photo, id], (err, result) => {
         if (err) {
           reject(err)
         } else {

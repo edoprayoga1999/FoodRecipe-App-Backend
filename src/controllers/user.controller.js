@@ -1,61 +1,32 @@
 const userModel = require('../models/user.model')
+const { success, failed } = require('../helpers/response')
 const userController = {
-  showAllUser: (req, res) => {
+  showAllUser: async (req, res) => {
     try {
-      userModel.showAllUser()
+      const { sortField, sortType, page, limit } = req.query
+      const field = sortField || 'name'
+      const type = sortType === 'DESC' ? sortType : 'ASC'
+      const getPage = page ? Number(page) : 1
+      const limitPage = limit ? Number(limit) : 2
+      const offset = (getPage - 1) * limitPage
+      const allData = await userModel.allData()
+      const totalData = Number(allData.rows[0].total)
+      userModel.showAllUser(field, type, limitPage, offset)
         .then((result) => {
-          const data = result.rows
-          const hasil = { status: 'sukses', data }
-          res.json(hasil)
+          const pagination = { page: getPage, data_perPage: limitPage, total_data: totalData }
+          success(res, result.rows, 'success', 'get user success', pagination)
         })
         .catch((err) => {
-          const hasil = { status: 'Error', err }
-          res.json(hasil)
+          failed(res, err, 'error', 'an error has occured')
         })
     } catch (err) {
-      const hasil = { status: 'Error', err }
-      res.json(hasil)
-    }
-  },
-  register: (req, res) => {
-    try {
-      const { name, email, password, phone, photo } = req.body
-      if (!name) {
-        throw Error('Nama harus diisi')
-      }
-      if (!email) {
-        throw Error('Email harus diisi')
-      }
-      if (!password) {
-        throw Error('Password harus diisi')
-      }
-      if (!phone) {
-        throw Error('Nomor telepon harus diisi')
-      }
-      userModel.checkEmailRegistered(email)
-        .then((result) => {
-          userModel.register(name, result, password, phone, photo)
-            .then((result) => {
-              const hasil = { status: 'Sukses', message: result }
-              res.json(hasil)
-            })
-            .catch((err) => {
-              const hasil = { status: 'Error', err }
-              res.json(hasil)
-            })
-        })
-        .catch((err) => {
-          const hasil = { status: 'Error', errMsg: err.message }
-          res.json(hasil)
-        })
-    } catch (err) {
-      const hasil = { status: 'Error', errMsg: err.message }
-      res.json(hasil)
+      failed(res, err, 'error', 'an error has occured')
     }
   },
   updateData: (req, res) => {
     try {
-      const { name, email, password, phone, photo } = req.body
+      const { name, email, phone } = req.body
+      const photo = req.APP_DATA.tokenDecoded.photo
       const id = req.params.id
       if (!name) {
         throw Error('Nama harus diisi')
@@ -63,29 +34,22 @@ const userController = {
       if (!email) {
         throw Error('Email harus diisi')
       }
-      if (!password) {
-        throw Error('Password harus diisi')
-      }
       if (!phone) {
         throw Error('Nomor telepon harus diisi')
       }
-      userModel.updateData(id, name, email, password, phone, photo)
+      userModel.updateData(id, name, email, phone, photo)
         .then((result) => {
           if (result.rowCount > 0) {
-            const hasil = { status: 'Sukses', message: 'Update data sukses!' }
-            res.json(hasil)
+            success(res, null, 'success', 'update data sukses!')
           } else {
-            const hasil = { status: 'Error', message: 'Data dengan id = ' + id + ' tidak ditemukan' }
-            res.json(hasil)
+            failed(res, 'id not found', 'error', 'data tidak ditemukan')
           }
         })
         .catch((err) => {
-          const hasil = { status: 'Error', err }
-          res.json(hasil)
+          failed(res, err, 'error', 'an error has occured')
         })
     } catch (err) {
-      const hasil = { status: 'Error', err }
-      res.json(hasil)
+      failed(res, null, 'error', err.message)
     }
   },
   deleteUser: (req, res) => {
@@ -97,20 +61,16 @@ const userController = {
       userModel.deleteUser(id)
         .then((result) => {
           if (result.rowCount > 0) {
-            const hasil = { status: 'Sukses', message: 'Berhasil menghapus user dengan id = ' + id }
-            res.json(hasil)
+            success(res, null, 'success', 'berhasil menghapus user!')
           } else {
-            const hasil = { status: 'Error', message: 'User dengan id = ' + id + ' tidak ditemukan' }
-            res.json(hasil)
+            failed(res, 'id not found', 'error', 'data tidak ditemukan')
           }
         })
         .catch((err) => {
-          const hasil = { status: 'Error', message: err }
-          res.json(hasil)
+          failed(res, err, 'error', 'an error has occured')
         })
     } catch (err) {
-      const hasil = { status: 'Error', errMsg: err.message }
-      res.json(hasil)
+      failed(res, null, 'error', err.message)
     }
   }
 }

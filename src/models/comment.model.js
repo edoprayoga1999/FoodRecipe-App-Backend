@@ -1,5 +1,16 @@
 const db = require('../config/db')
 const commentModel = {
+  checkAuthor: (id) => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * from comment WHERE id=$1', [id], (err, result) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  },
   showCommentByRecipe: (recipeID) => {
     return new Promise((resolve, reject) => {
       db.query('SELECT user_id, comment_text FROM comment WHERE recipe_id=$1', [recipeID], (err, result) => {
