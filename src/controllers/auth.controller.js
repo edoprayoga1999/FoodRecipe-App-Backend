@@ -5,11 +5,11 @@ const jwtToken = require('../helpers/generateJwtToken')
 const authController = {
   register: (req, res) => {
     try {
-      let photo = req.file.filename
-      if (!photo) {
-        photo = null
-      }
-      const { name, email, password, phone } = req.body
+      // let photo = req.file.filename
+      // if (!photo) {
+      //   photo = null
+      // }
+      const { name, email, password, phone, photo } = req.body
       if (!name) {
         throw Error('Nama harus diisi') // validation
       }
@@ -22,7 +22,7 @@ const authController = {
       if (!phone) {
         throw Error('Nomor telepon harus diisi') // validation
       }
-      authModel.checkEmailRegistered(email) // call model to check email exist or not
+      authModel.checkEmailRegistered(email.toLowerCase()) // call model to check email exist or not
         .then((result) => {
           bcrypt.hash(password, 10, (err, hash) => { // encrypt password before insert to db
             if (err) {
@@ -37,7 +37,7 @@ const authController = {
               }
               authModel.register(data) // calling model to register data
                 .then((result) => {
-                  success(res, null, 'sukses', 'Register user berhasil') // output if success
+                  success(res, null, 'success', 'Register user berhasil') // output if success
                 })
                 .catch((err) => {
                   failed(res, err.message, 'failed', 'Register user gagal') // output if failed
@@ -69,7 +69,7 @@ const authController = {
               .then(async (match) => {
                 if (match) {
                   const token = await jwtToken(results.rows[0])
-                  successWithToken(res, token, 'success', 'login sukses') // output if bcrypt compare return true
+                  successWithToken(res, token, results.rows[0].id, 'success', 'login sukses') // output if bcrypt compare return true
                 } else {
                   failed(res, null, 'error', 'username atau password salah') // output if bcrypt compare return false
                 }

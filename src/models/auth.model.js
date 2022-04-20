@@ -15,7 +15,7 @@ const authModel = {
   },
   register: ({ name, email, password, phone, photo }) => {
     return new Promise((resolve, reject) => {
-      db.query('INSERT INTO users (name, email, password, phone, photo, level, is_verified) VALUES ($1, $2, $3, $4, $5, 1, 1)', [name, email, password, phone, photo], (err, result) => {
+      db.query('INSERT INTO users (name, email, password, phone, photo, level, is_verified, is_active) VALUES ($1, $2, $3, $4, $5, 1, 1, 1)', [name, email, password, phone, photo], (err, result) => {
         if (err) {
           reject(err)
         } else {

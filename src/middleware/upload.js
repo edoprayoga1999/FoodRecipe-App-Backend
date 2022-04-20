@@ -1,5 +1,6 @@
 const multer = require('multer')
 const path = require('path')
+const { failed } = require('../helpers/response')
 
 // management file
 const maxSize = 2 * 1024 * 1024
@@ -15,7 +16,7 @@ const multerUpload = multer({
     }
   }),
   fileFilter: (req, file, cb) => {
-    const ext = path.extname(file.originalname)
+    const ext = path.extname(file.originalname).toLowerCase()
     if (ext === '.jpg' || ext === '.png') {
       cb(null, true)
     } else {
@@ -32,13 +33,10 @@ const multerUpload = multer({
 
 // middleware
 const upload = (req, res, next) => {
-  const multerSingle = multerUpload.single('gambar')
+  const multerSingle = multerUpload.single('photo')
   multerSingle(req, res, (err) => {
     if (err) {
-      res.json({
-        message: 'error',
-        error: err
-      })
+      failed(res, err, 'error', 'an error occured')
     } else {
       next()
     }

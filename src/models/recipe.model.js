@@ -1,3 +1,4 @@
+const e = require('express')
 const db = require('../config/db')
 const recipeModel = {
   allData: () => {
@@ -13,8 +14,19 @@ const recipeModel = {
   },
   createRecipe: (photo, title, ingredients, video, userID) => {
     return new Promise((resolve, reject) => {
-      db.query('INSERT INTO recipe (photo, title, ingredients, video, date, user_id) VALUES ($1, $2, $3, $4, current_timestamp, $5)', [photo, title, ingredients, video, userID], (err, result) => {
+      db.query('INSERT INTO recipe (photo, title, ingredients, video, date, user_id, is_active) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, $5, 1)', [photo, title, ingredients, video, userID], (err, result) => {
         if (err) {
+          reject(err)
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  },
+  myRecipe: (userID) => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM recipe WHERE user_id=$1', [userID], (err, result) => {
+        if(err) {
           reject(err)
         } else {
           resolve(result)
@@ -68,7 +80,7 @@ const recipeModel = {
   },
   showNewRecipe: () => {
     return new Promise((resolve, reject) => {
-      db.query('SELECT recipe.id, recipe.photo, title, ingredients, video, date, name FROM recipe INNER JOIN users ON recipe.user_id=users.id ORDER BY date DESC LIMIT 5', (err, result) => {
+      db.query('SELECT recipe.id, recipe.photo, title, ingredients, video, date, name FROM recipe INNER JOIN users ON recipe.user_id=users.id ORDER BY date DESC LIMIT 6', (err, result) => {
         if (err) {
           reject(err)
         } else {
@@ -77,9 +89,9 @@ const recipeModel = {
       })
     })
   },
-  showRecipeByAuthor: (name) => {
+  showRecipeById: (id) => {
     return new Promise((resolve, reject) => {
-      db.query(`SELECT recipe.id, recipe.photo, title, ingredients, video, date, name FROM recipe INNER JOIN users ON recipe.user_id=users.id WHERE LOWER(name) LIKE LOWER('%${name}%')`, (err, result) => {
+      db.query(`SELECT recipe.id, recipe.photo, title, ingredients, video, date, name FROM recipe INNER JOIN users ON recipe.user_id=users.id WHERE recipe.id= ${id}`, (err, result) => {
         if (err) {
           reject(err)
         } else {

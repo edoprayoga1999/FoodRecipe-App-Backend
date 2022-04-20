@@ -67,6 +67,17 @@ const userModel = {
         }
       })
     })
+  },
+  detailUser: (id) => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT name, email, phone, photo FROM users WHERE id=$1', [id], (err, result) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(result)
+        }
+      })
+    })
   }
 }
 module.exports = userModel

@@ -26,7 +26,10 @@ const userController = {
   updateData: (req, res) => {
     try {
       const { name, email, phone } = req.body
-      const photo = req.APP_DATA.tokenDecoded.photo
+      let photo = req.file.filename
+      if (!photo){
+        photo = req.APP_DATA.tokenDecoded.photo
+      }
       const id = req.params.id
       if (!name) {
         throw Error('Nama harus diisi')
@@ -69,6 +72,27 @@ const userController = {
         .catch((err) => {
           failed(res, err, 'error', 'an error has occured')
         })
+    } catch (err) {
+      failed(res, null, 'error', err.message)
+    }
+  },
+  detailUser: (req, res) => {
+    try {
+      const id = req.params.id
+      if (!id) {
+        throw Error('ID harus diisi')
+      }
+      userModel.detailUser(id)
+      .then((result) => {
+        if (result.rowCount > 0) {
+          success(res, result.rows, 'success', 'menampilkan data user sukses')
+        } else {
+          failed(res, 'id not found', 'error', 'data tidak ditemukan')
+        }
+      })
+      .catch((err) => {
+        failed(res, null, 'error', 'an error occured')
+      })
     } catch (err) {
       failed(res, null, 'error', err.message)
     }

@@ -36,7 +36,7 @@ const recipeController = {
       const field = sortField || 'title'
       const type = sortType === 'DESC' ? sortType : 'ASC'
       const getPage = page ? Number(page) : 1
-      const limitPage = limit ? Number(limit) : 2
+      const limitPage = limit ? Number(limit) : 6
       const offset = (getPage - 1) * limitPage
       const allData = await recipeModel.allData()
       const totalData = Number(allData.rows[0].total)
@@ -47,10 +47,24 @@ const recipeController = {
           success(res, result.rows, 'success', 'get recipe success', pagination)
         })
         .catch((err) => {
-          failed(res, err, 'error', '1an error has occured')
+          failed(res, err, 'error', 'an error has occured')
         })
     } catch (err) {
-      failed(res, err, 'error', '2an error has occured')
+      failed(res, err, 'error', 'an error has occured')
+    }
+  },
+  myRecipe: (req, res) => {
+    try {
+      const userID = req.APP_DATA.tokenDecoded.id
+      recipeModel.myRecipe(userID)
+      .then((result) => {
+        success(res, result.rows, 'success', 'get recipe successfully')
+      })
+      .catch((err) => {
+        failed(res, err, 'error', '1an error occured')
+      })
+    } catch (err) {
+      failed(res, err, 'error', '2an error occured')
     }
   },
   updateRecipe: (req, res) => {
@@ -139,13 +153,13 @@ const recipeController = {
       failed(res, err, 'error', 'an error has occured')
     }
   },
-  showRecipeByAuthor: (req, res) => {
+  showRecipeById: (req, res) => {
     try {
-      const name = req.query.name || ''
-      recipeModel.showRecipeByAuthor(name)
+      const id = req.params.id
+      recipeModel.showRecipeById(id)
         .then((result) => {
           if (result.rowCount > 0) {
-            success(res, result.rows, 'success', 'mendapatkan resep berdasarkan author berhasil!')
+            success(res, result.rows, 'success', 'mendapatkan resep berdasarkan id berhasil!')
           } else {
             failed(res, null, 'error', 'resep tidak ditemukan')
           }
