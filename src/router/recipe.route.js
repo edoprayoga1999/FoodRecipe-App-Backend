@@ -1,8 +1,8 @@
 const express = require('express')
 const router = express.Router()
-const { createRecipe, recipeList, myRecipe, updateRecipe, deleteRecipe, showNewRecipe, showRecipeById } = require('../controllers/recipe.controller')
+const { createRecipe, recipeList, myRecipe, updateRecipe, deleteRecipe, showNewRecipe, showRecipeById, updateStatus } = require('../controllers/recipe.controller')
 const jwtAuth = require('../middleware/jwtAuth')
-const { isCustomer } = require('../middleware/authorization')
+const { isCustomer, isAdmin } = require('../middleware/authorization')
 const { isVerified } = require('../middleware/isVerified')
 const upload = require('../middleware/upload')
 router
@@ -13,5 +13,6 @@ router
   .delete('/delete/recipe/:id', jwtAuth, isVerified, isCustomer, deleteRecipe) // For delete data on recipe by id
   .get('/recipe/latest', showNewRecipe) // For showing the latest data on recipe by date
   .get('/recipe/detail/:id', jwtAuth, isVerified, showRecipeById) // For showing data on a recipe based on author // id user
+  .put('/recipe/status/:id', jwtAuth, isVerified, isAdmin, updateStatus)
 
 module.exports = router

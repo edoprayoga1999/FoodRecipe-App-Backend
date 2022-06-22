@@ -1,9 +1,8 @@
-const e = require('express')
 const db = require('../config/db')
 const recipeModel = {
-  allData: () => {
+  allData: (name) => {
     return new Promise((resolve, reject) => {
-      db.query('SELECT COUNT(*) as total FROM recipe', (err, result) => {
+      db.query(`SELECT COUNT(*) as total FROM recipe WHERE LOWER(title) LIKE LOWER('%${name}%')`, (err, result) => {
         if (err) {
           reject(err)
         } else {
@@ -26,7 +25,7 @@ const recipeModel = {
   myRecipe: (userID) => {
     return new Promise((resolve, reject) => {
       db.query('SELECT * FROM recipe WHERE user_id=$1', [userID], (err, result) => {
-        if(err) {
+        if (err) {
           reject(err)
         } else {
           resolve(result)
@@ -48,6 +47,17 @@ const recipeModel = {
   updateRecipe: (id, photo, title, ingredients, video, userID) => {
     return new Promise((resolve, reject) => {
       db.query('UPDATE recipe SET photo=$1, title=$2, ingredients=$3, video=$4, date=current_timestamp, user_id=$5 WHERE id=$6', [photo, title, ingredients, video, userID, id], (err, result) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  },
+  updateRecipeStatus: (id, status) => {
+    return new Promise((resolve, reject) => {
+      db.query('UPDATE recipe set is_active=$2 WHERE id=$1 ', [id, status], (err, result) => {
         if (err) {
           reject(err)
         } else {

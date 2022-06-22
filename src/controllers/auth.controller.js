@@ -5,11 +5,13 @@ const jwtToken = require('../helpers/generateJwtToken')
 const authController = {
   register: (req, res) => {
     try {
-      // let photo = req.file.filename
-      // if (!photo) {
-      //   photo = null
-      // }
-      const { name, email, password, phone, photo } = req.body
+      let photo
+      if (typeof (req.body.photo) === 'string') {
+        photo = req.body.photo
+      } else {
+        photo = req.file.filename
+      }
+      const { name, email, password, phone } = req.body
       if (!name) {
         throw Error('Nama harus diisi') // validation
       }

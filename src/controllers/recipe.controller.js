@@ -11,9 +11,11 @@ const recipeController = {
         throw Error('Ingredients harus diisi')
       }
       const userID = req.APP_DATA.tokenDecoded.id
-      let photo = req.file.filename
-      if (!photo) {
-        photo = null
+      let photo
+      if (typeof (req.body.photo) === 'string') {
+        photo = req.body.photo
+      } else {
+        photo = req.file.filename
       }
       recipeModel.createRecipe(photo, title, ingredients, video, userID)
         .then((result) => {
@@ -38,12 +40,13 @@ const recipeController = {
       const getPage = page ? Number(page) : 1
       const limitPage = limit ? Number(limit) : 6
       const offset = (getPage - 1) * limitPage
-      const allData = await recipeModel.allData()
-      const totalData = Number(allData.rows[0].total)
       const name = req.query.name || ''
+      const allData = await recipeModel.allData(name)
+      const totalData = Number(allData.rows[0].total)
+      const totalPage = Math.ceil(totalData / limitPage)
       recipeModel.recipeList(field, type, limitPage, offset, name)
         .then((result) => {
-          const pagination = { page: getPage, data_perPage: limitPage, total_data: totalData }
+          const pagination = { page: getPage, data_perPage: limitPage, total_data: totalData, total_page: totalPage }
           success(res, result.rows, 'success', 'get recipe success', pagination)
         })
         .catch((err) => {
@@ -57,12 +60,12 @@ const recipeController = {
     try {
       const userID = req.APP_DATA.tokenDecoded.id
       recipeModel.myRecipe(userID)
-      .then((result) => {
-        success(res, result.rows, 'success', 'get recipe successfully')
-      })
-      .catch((err) => {
-        failed(res, err, 'error', '1an error occured')
-      })
+        .then((result) => {
+          success(res, result.rows, 'success', 'get recipe successfully')
+        })
+        .catch((err) => {
+          failed(res, err, 'error', '1an error occured')
+        })
     } catch (err) {
       failed(res, err, 'error', '2an error occured')
     }
@@ -72,8 +75,12 @@ const recipeController = {
       const id = req.params.id
       const { title, ingredients, video } = req.body
       const userID = req.APP_DATA.tokenDecoded.id
-      const photo = req.file.filename
-
+      let photo
+      if (typeof (req.body.photo) === 'string') {
+        photo = req.body.photo
+      } else {
+        photo = req.file.filename
+      }
       if (!id) {
         throw Error('ID harus dikirim')
       }
@@ -103,6 +110,35 @@ const recipeController = {
         })
         .catch((err) => {
           failed(res, err, 'error', 'an error has occured')
+        })
+    } catch (err) {
+      failed(res, null, 'error', err.message)
+    }
+  },
+  updateStatus: (req, res) => {
+    try {
+      const { id } = req.params
+      if (!id) {
+        throw Error('id must be given')
+      }
+      let status
+      if (req.body.action === 'deactivate') {
+        status = 0
+      } else if (req.body.action === 'activate') {
+        status = 1
+      } else {
+        throw Error("action must be 'activate' or 'deactivate' only")
+      }
+      recipeModel.updateRecipeStatus(id, status)
+        .then((result) => {
+          if (result.rowCount > 0) {
+            success(res, null, 'success', 'update status recipe success!')
+          } else {
+            failed(res, null, 'error', 'no recipe found')
+          }
+        })
+        .catch((err) => {
+          failed(res, null, 'error', err.message)
         })
     } catch (err) {
       failed(res, null, 'error', err.message)

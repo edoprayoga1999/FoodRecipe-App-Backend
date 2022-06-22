@@ -57,6 +57,17 @@ const userModel = {
       })
     })
   },
+  updateStatus: (id, condition) => {
+    return new Promise((resolve, reject) => {
+      db.query('UPDATE users SET is_active=$2 WHERE id=$1', [id, condition], (err, result) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  },
   deleteUser: (id) => {
     return new Promise((resolve, reject) => {
       db.query('DELETE FROM users WHERE id=$1', [id], (err, result) => {

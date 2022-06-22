@@ -26,9 +26,11 @@ const userController = {
   updateData: (req, res) => {
     try {
       const { name, email, phone } = req.body
-      let photo = req.file.filename
-      if (!photo){
-        photo = req.APP_DATA.tokenDecoded.photo
+      let photo
+      if (typeof (req.body.photo) === 'string') {
+        photo = req.body.photo
+      } else {
+        photo = req.file.filename
       }
       const id = req.params.id
       if (!name) {
@@ -76,6 +78,35 @@ const userController = {
       failed(res, null, 'error', err.message)
     }
   },
+  suspendUser: (req, res) => {
+    try {
+      const { id } = req.params
+      if (!id) {
+        throw Error('id must be given')
+      }
+      let status
+      if (req.body.action === 'deactivate') {
+        status = 0
+      } else if (req.body.action === 'activate') {
+        status = 1
+      } else {
+        throw Error("action must be 'activate' or 'deactivate' only")
+      }
+      userModel.updateStatus(id, status)
+        .then((result) => {
+          if (result.rowCount > 0) {
+            success(res, null, 'success', 'update status user success!')
+          } else {
+            failed(res, null, 'error', 'no recipe found')
+          }
+        })
+        .catch((err) => {
+          failed(res, null, 'error', err.message)
+        })
+    } catch (err) {
+      failed(res, null, 'error', err.message)
+    }
+  },
   detailUser: (req, res) => {
     try {
       const id = req.params.id
@@ -83,16 +114,16 @@ const userController = {
         throw Error('ID harus diisi')
       }
       userModel.detailUser(id)
-      .then((result) => {
-        if (result.rowCount > 0) {
-          success(res, result.rows, 'success', 'menampilkan data user sukses')
-        } else {
-          failed(res, 'id not found', 'error', 'data tidak ditemukan')
-        }
-      })
-      .catch((err) => {
-        failed(res, null, 'error', 'an error occured')
-      })
+        .then((result) => {
+          if (result.rowCount > 0) {
+            success(res, result.rows, 'success', 'menampilkan data user sukses')
+          } else {
+            failed(res, 'id not found', 'error', 'data tidak ditemukan')
+          }
+        })
+        .catch((err) => {
+          failed(res, null, 'error', err.message)
+        })
     } catch (err) {
       failed(res, null, 'error', err.message)
     }
