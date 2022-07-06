@@ -60,7 +60,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Project description here
+This is a web API services for [Foodrecipe - App](https://github.com/edoprayoga1999/foodrecipe-fe)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
