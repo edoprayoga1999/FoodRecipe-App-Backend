@@ -148,13 +148,13 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 ## Related Sroject
 
-:rocket: [`FoodRecipe Backend`](https://github.com/edoprayoga1999/foodrecipe-be)
+:rocket: [`FoodRecipe Front End`](https://github.com/edoprayoga1999/foodrecipe-fe)
 
 <!-- CONTACT -->
 ## Contact
 
 Edo Prayoga - [fb.me/edoprayoga1999](https://facebook.com/edoprayoga1999) - edoprayoga.se@gmail.com
 
-Project Link: [https://github.com/edoprayoga1999/foodrecipe-fe](https://github.com/edoprayoga1999/foodrecipe-fe)
+Project Link: [https://github.com/edoprayoga1999/foodrecipe-be](https://github.com/edoprayoga1999/foodrecipe-be)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
