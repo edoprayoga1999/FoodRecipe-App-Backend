@@ -70,11 +70,11 @@ This is a web API services for [Foodrecipe - App](https://github.com/edoprayoga1
 
 This application is built with the following technologies:
 
-* [Node.js](https://reactjs.org/)
-* [Express.js](https://reactjs.org/)
-* [JSON Web Tokens](https://axios-http.com)
-* [Bcrypt](https://redux.js.org/)
-* [PostgreSQL](https://getbootstrap.com)
+* [Node.js](https://nodejs.org/)
+* [Express.js](https://expressjs.com/)
+* [JSON Web Tokens](https://jwt.io/)
+* [Bcrypt](https://github.com/kelektiv/node.bcrypt.js)
+* [PostgreSQL](https://www.postgresql.org/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
